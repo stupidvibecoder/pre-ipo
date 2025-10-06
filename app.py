@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+from datetime import datetime
 
 # ---------------------------
 # Page setup
@@ -78,12 +79,26 @@ df = pd.DataFrame(data, columns=["company", "date", "valuation ($B)", "capital_r
 df["date"] = pd.to_datetime(df["date"])
 df["valuation ($B)"] = pd.to_numeric(df["valuation ($B)"], errors="coerce")
 df["capital_raised ($B)"] = pd.to_numeric(df["capital_raised ($B)"], errors="coerce")
-
-# Compute cumulative capital raised
 df["cumulative_raised ($B)"] = df.groupby("company")["capital_raised ($B)"].cumsum()
 
 # ---------------------------
-# Company descriptions
+# Company founding dates
+# ---------------------------
+founding_dates = {
+    "SpaceX": "2002-03-14",
+    "Stripe": "2010-01-01",
+    "OpenAI": "2015-12-11",
+    "ByteDance": "2012-03-01",
+    "Shein": "2008-10-01",
+    "Canva": "2012-01-01",
+    "Databricks": "2013-01-01",
+    "Epic Games": "1991-01-01",
+    "Revolut": "2015-07-01",
+    "Reddit": "2005-06-23"
+}
+
+# ---------------------------
+# Company info
 # ---------------------------
 company_info = {
     "SpaceX": [
@@ -139,7 +154,7 @@ company_info = {
 }
 
 # ---------------------------
-# Streamlit app layout
+# Sidebar
 # ---------------------------
 st.sidebar.header("Private Company Tracker")
 company_list = sorted(df["company"].unique())
@@ -147,7 +162,7 @@ selected_company = st.sidebar.selectbox("Select a company:", company_list)
 
 company_df = df[df["company"] == selected_company].sort_values("date")
 
-# Ensure numeric data is clean
+# Clean data
 company_df["valuation ($B)"] = pd.to_numeric(company_df["valuation ($B)"], errors="coerce")
 company_df["cumulative_raised ($B)"] = pd.to_numeric(company_df["cumulative_raised ($B)"], errors="coerce")
 
@@ -155,11 +170,16 @@ max_raise = float(company_df["cumulative_raised ($B)"].fillna(0).max() or 1)
 max_valuation = float(company_df["valuation ($B)"].fillna(0).max() or 1)
 
 # ---------------------------
+# Dynamic x-axis range
+# ---------------------------
+founding_date = pd.to_datetime(founding_dates.get(selected_company, company_df["date"].min()))
+today = pd.to_datetime(datetime.today().date())
+
+# ---------------------------
 # Plot
 # ---------------------------
 fig = go.Figure()
 
-# Valuation line
 fig.add_trace(go.Scatter(
     x=company_df["date"],
     y=company_df["valuation ($B)"],
@@ -168,7 +188,6 @@ fig.add_trace(go.Scatter(
     line=dict(color="royalblue", width=3)
 ))
 
-# Cumulative capital raised line
 fig.add_trace(go.Scatter(
     x=company_df["date"],
     y=company_df["cumulative_raised ($B)"],
@@ -180,7 +199,7 @@ fig.add_trace(go.Scatter(
 
 fig.update_layout(
     title=f"{selected_company} — Valuation and Cumulative Capital Raised Over Time",
-    xaxis=dict(title="Date"),
+    xaxis=dict(title="Date", range=[founding_date, today]),
     yaxis=dict(title="Valuation ($B)", range=[0, max_valuation * 1.2]),
     yaxis2=dict(
         title="Cumulative Raised ($B)",
@@ -202,6 +221,6 @@ with col1:
     st.plotly_chart(fig, use_container_width=True)
 
 with col2:
-    st.markdown(f"### {selected_company}")
+    st.markdown(f"### About {selected_company}")
     for point in company_info.get(selected_company, []):
         st.markdown(f"- {point}")
