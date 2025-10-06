@@ -9,7 +9,7 @@ from datetime import datetime
 st.set_page_config(page_title="Private Market Tracker", layout="wide")
 
 st.title("📈 Private Market Tracker")
-st.write("Visualizing valuation and funding data for the 10 biggest private companies.")
+st.write("Visualizing valuation and funding data for the biggest private companies.")
 
 # ---------------------------
 # Data setup - Complete funding history
@@ -322,13 +322,4 @@ with col2:
     st.metric("Total Raised", f"${latest['cumulative_raised ($B)']:.2f}B")
     st.metric("Latest Round", latest["funding_round"])
 
-# Footer with data summary
-st.markdown("---")
-st.subheader("📊 Dataset Summary")
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Total Companies", len(df["company"].unique()))
-with col2:
-    st.metric("Total Funding Rounds", len(df))
-with col3:
-    st.metric("Combined Valuation", f"${df.groupby('company').last()['valuation ($B)'].sum():.1f}B")
+
