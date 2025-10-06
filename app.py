@@ -2,7 +2,7 @@
 
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import plotly.graph_objects as go
 
 st.set_page_config(page_title="Private Market Tracker", page_icon="💼", layout="wide")
 
@@ -20,7 +20,7 @@ st.sidebar.title("Private Company Tracker")
 companies = df["company"].unique()
 selected_company = st.sidebar.selectbox("Select a company:", companies)
 
-# --- Company Descriptions ---
+# --- Company Summaries ---
 company_summaries = {
     "SpaceX": [
         "Founded by Elon Musk in 2002; leading private space company.",
@@ -100,20 +100,51 @@ company_summaries = {
 st.title("💼 Private Market Tracker")
 st.markdown("Visualizing valuation and funding data for the 10 biggest private companies.")
 
-company_df = df[df["company"] == selected_company]
+company_df = df[df["company"] == selected_company].sort_values("date")
+company_df["cumulative_raised ($B)"] = company_df["capital_raised ($B)"].cumsum()
 
 col1, col2 = st.columns([2, 1])
 
-# --- Chart: Valuation over time ---
+# --- Combined Chart: Valuation + Cumulative Capital Raised ---
 with col1:
-    fig = px.line(
-        company_df,
-        x="date",
-        y="valuation ($B)",
-        markers=True,
-        title=f"{selected_company} Valuation Over Time",
+    fig = go.Figure()
+
+    # Valuation line (left y-axis)
+    fig.add_trace(go.Scatter(
+        x=company_df["date"],
+        y=company_df["valuation ($B)"],
+        name="Valuation ($B)",
+        mode="lines+markers",
+        line=dict(color="#1f77b4", width=3),
+        yaxis="y1"
+    ))
+
+    # Cumulative capital raised (right y-axis)
+    fig.add_trace(go.Scatter(
+        x=company_df["date"],
+        y=company_df["cumulative_raised ($B)"],
+        name="Cumulative Capital Raised ($B)",
+        mode="lines+markers",
+        line=dict(color="#ff7f0e", width=3, dash="dot"),
+        yaxis="y2"
+    ))
+
+    # Layout settings
+    fig.update_layout(
+        title=f"{selected_company}: Valuation vs. Cumulative Capital Raised",
+        xaxis=dict(title="Date"),
+        yaxis=dict(title="Valuation ($B)", side="left", showgrid=False),
+        yaxis2=dict(
+            title="Cumulative Capital Raised ($B)",
+            overlaying="y",
+            side="right",
+            showgrid=False
+        ),
+        legend=dict(x=0.02, y=0.98),
+        hovermode="x unified",
+        template="plotly_white"
     )
-    fig.update_layout(xaxis_title="Date", yaxis_title="Valuation ($B)")
+
     st.plotly_chart(fig, use_container_width=True)
 
 # --- Company Description ---
