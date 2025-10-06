@@ -374,14 +374,3 @@ st.markdown("---")
 st.markdown("### 💭 Rishi's Opinion:")
 opinion = load_opinion(selected_company)
 st.info(opinion)
-
-# Footer with data summary
-st.markdown("---")
-st.subheader("📊 Dataset Summary")
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Total Companies", len(df["company"].unique()))
-with col2:
-    st.metric("Total Funding Rounds", len(df))
-with col3:
-    st.metric("Combined Valuation", f"${df.groupby('company').last()['valuation ($B)'].sum():.1f}B")
