@@ -145,14 +145,14 @@ with col1:
             zeroline=False
         ),
         yaxis2=dict(
-            title="Cumulative Capital Raised ($B)",
-            side="right",
-            overlaying="y",
-            showgrid=False,
-            zeroline=False,
-            # key fix: keep axis within reasonable range
-            range=[0, company_df["cumulative_raised ($B)"].max() * 1.2]
-        ),
+    title="Cumulative Capital Raised ($B)",
+    side="right",
+    overlaying="y",
+    showgrid=False,
+    zeroline=False,
+    range=[0, float(company_df["cumulative_raised ($B)"].fillna(0).astype(float).max()) * 1.2 if not company_df.empty else 1]
+),
+
         legend=dict(
             orientation="h",
             yanchor="bottom",
