@@ -109,7 +109,7 @@ col1, col2 = st.columns([2, 1])
 with col1:
     fig = go.Figure()
 
-    # Valuation line (left y-axis)
+    # Primary axis: Valuation
     fig.add_trace(go.Scatter(
         x=company_df["date"],
         y=company_df["valuation ($B)"],
@@ -119,7 +119,7 @@ with col1:
         yaxis="y1"
     ))
 
-    # Cumulative capital raised (right y-axis)
+    # Secondary axis: Cumulative capital raised
     fig.add_trace(go.Scatter(
         x=company_df["date"],
         y=company_df["cumulative_raised ($B)"],
@@ -129,20 +129,40 @@ with col1:
         yaxis="y2"
     ))
 
-    # Layout settings
+    # Clean dual-axis layout
     fig.update_layout(
         title=f"{selected_company}: Valuation vs. Cumulative Capital Raised",
-        xaxis=dict(title="Date"),
-        yaxis=dict(title="Valuation ($B)", side="left", showgrid=False),
+        xaxis=dict(
+            title="Date",
+            showgrid=True,
+            gridcolor="rgba(200,200,200,0.1)"
+        ),
+        yaxis=dict(
+            title="Valuation ($B)",
+            side="left",
+            showgrid=True,
+            gridcolor="rgba(200,200,200,0.1)",
+            zeroline=False
+        ),
         yaxis2=dict(
             title="Cumulative Capital Raised ($B)",
-            overlaying="y",
             side="right",
-            showgrid=False
+            overlaying="y",
+            showgrid=False,
+            zeroline=False,
+            # key fix: keep axis within reasonable range
+            range=[0, company_df["cumulative_raised ($B)"].max() * 1.2]
         ),
-        legend=dict(x=0.02, y=0.98),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.5
+        ),
         hovermode="x unified",
-        template="plotly_white"
+        template="plotly_white",
+        margin=dict(l=40, r=40, t=60, b=40)
     )
 
     st.plotly_chart(fig, use_container_width=True)
