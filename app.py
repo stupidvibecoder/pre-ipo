@@ -16,6 +16,10 @@ st.write("Visualizing valuation and funding data for the 10 biggest private comp
 # ---------------------------
 data = [
     # SpaceX
+    ["SpaceX", "2002-12-18", 0.005, 0.001],
+    ["SpaceX", "2005-03-09", 0.05, 0.05],
+    ["SpaceX", "2008-08-01", 0.5, 0.02],
+    ["SpaceX", "2010-10-28", 1.0, 0.05],
     ["SpaceX", "2015-01-01", 12, 1],
     ["SpaceX", "2017-12-01", 21, 1.2],
     ["SpaceX", "2020-08-01", 46, 2.1],
