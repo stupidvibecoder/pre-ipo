@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime
+import os
 
 # ---------------------------
 # Page setup
@@ -142,6 +143,22 @@ data = [
     ["Fanatics", "2021-08-04", 18.0, 0.325, "Series G"],
     ["Fanatics", "2022-03-01", 27.0, 1.5, "Series H"],
     ["Fanatics", "2023-12-01", 31.0, 0.7, "Series I"],
+
+    # Anthropic
+    ["Anthropic", "2021-05-01", 0.124, 0.124, "Series A"],
+    ["Anthropic", "2022-04-01", 4.0, 0.58, "Series B"],
+    ["Anthropic", "2023-02-01", 5.0, 0.3, "Series B"],
+    ["Anthropic", "2023-05-01", 5.0, 0.45, "Series C"],
+    ["Anthropic", "2023-09-01", 18.4, 3.0, "Series C"],
+    ["Anthropic", "2024-02-01", 18.4, 2.0, "Series C"],
+    ["Anthropic", "2025-03-01", 62.0, 3.5, "Series E"],
+    ["Anthropic", "2025-09-01", 170.0, 5.0, "Series F"],
+
+    # xAI
+    ["xAI", "2023-07-01", 0.1, 0.1, "Seed"],
+    ["xAI", "2024-05-01", 24.0, 6.0, "Series B"],
+    ["xAI", "2024-11-01", 50.0, 5.0, "Series C"],
+    ["xAI", "2025-03-01", 50.0, 0, "Merger with X"],
 ]
 
 df = pd.DataFrame(data, columns=["company", "date", "valuation ($B)", "capital_raised ($B)", "funding_round"])
@@ -163,7 +180,9 @@ founding_dates = {
     "Databricks": "2013-01-01",
     "Epic Games": "1991-01-01",
     "Revolut": "2015-07-01",
-    "Fanatics": "2011-01-01"
+    "Fanatics": "2011-01-01",
+    "Anthropic": "2021-01-01",
+    "xAI": "2023-07-12"
 }
 
 # ---------------------------
@@ -219,24 +238,50 @@ company_info = {
         "Sports merchandise and memorabilia platform.",
         "Expanding into sports betting and trading cards.",
         "Current valuation: $31B (Dec 2023) - serves major sports leagues."
+    ],
+    "Anthropic": [
+        "AI safety company founded by ex-OpenAI team, creators of Claude.",
+        "Backed by Google ($3B+) and Amazon ($8B) investments.",
+        "Current valuation: $170B (Sep 2025) - OpenAI's main competitor."
+    ],
+    "xAI": [
+        "Founded by Elon Musk in 2023 to build 'truth-seeking' AI.",
+        "Creator of Grok chatbot integrated with X (Twitter).",
+        "Current valuation: $50B (Mar 2025) - merged with X platform."
     ]
 }
+
+# ---------------------------
+# Function to load opinion files
+# ---------------------------
+def load_opinion(company_name):
+    """Load opinion from a text file named after the company"""
+    opinion_file = f"{company_name}.txt"
+    try:
+        with open(opinion_file, 'r') as f:
+            return f.read()
+    except FileNotFoundError:
+        return f"No opinion file found for {company_name}. Create a file named '{opinion_file}' in the same directory as this app to add your opinion."
+    except Exception as e:
+        return f"Error loading opinion: {str(e)}"
 
 # ---------------------------
 # Sidebar
 # ---------------------------
 st.sidebar.header("Private Company Tracker")
-st.sidebar.subheader("Top 10 by Valuation:")
+st.sidebar.subheader("Top 12 by Valuation:")
 st.sidebar.write("1. OpenAI - $500B")
 st.sidebar.write("2. SpaceX - $350B")
 st.sidebar.write("3. ByteDance - $300B")
-st.sidebar.write("4. Databricks - $100B")
-st.sidebar.write("5. Stripe - $91.5B")
-st.sidebar.write("6. Shein - $66B")
-st.sidebar.write("7. Revolut - $45B")
-st.sidebar.write("8. Fanatics - $31B")
-st.sidebar.write("9. Epic Games - $31.5B")
-st.sidebar.write("10. Canva - $26B")
+st.sidebar.write("4. Anthropic - $170B")
+st.sidebar.write("5. Databricks - $100B")
+st.sidebar.write("6. Stripe - $91.5B")
+st.sidebar.write("7. Shein - $66B")
+st.sidebar.write("8. xAI - $50B")
+st.sidebar.write("9. Revolut - $45B")
+st.sidebar.write("10. Fanatics - $31B")
+st.sidebar.write("11. Epic Games - $31.5B")
+st.sidebar.write("12. Canva - $26B")
 st.sidebar.markdown("---")
 
 company_list = sorted(df["company"].unique())
@@ -322,4 +367,21 @@ with col2:
     st.metric("Total Raised", f"${latest['cumulative_raised ($B)']:.2f}B")
     st.metric("Latest Round", latest["funding_round"])
 
+# ---------------------------
+# Rishi's Opinion Section
+# ---------------------------
+st.markdown("---")
+st.markdown("### 💭 Rishi's Opinion:")
+opinion = load_opinion(selected_company)
+st.info(opinion)
 
+# Footer with data summary
+st.markdown("---")
+st.subheader("📊 Dataset Summary")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric("Total Companies", len(df["company"].unique()))
+with col2:
+    st.metric("Total Funding Rounds", len(df))
+with col3:
+    st.metric("Combined Valuation", f"${df.groupby('company').last()['valuation ($B)'].sum():.1f}B")
