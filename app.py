@@ -86,7 +86,7 @@ company_info = {
     "OpenAI": [
         "AI research and deployment company behind GPT models and ChatGPT.",
         "Raised record $40B in March 2025 — largest private tech round ever.",
-        "Current valuation: $500B (Oct 2025) — world’s most valuable private company."
+        "Current valuation: $500B (Oct 2025)."
     ],
     "SpaceX": [
         "Founded by Elon Musk in 2002, focused on space transport and satellite internet.",
@@ -100,7 +100,7 @@ company_info = {
     ],
     "Anthropic": [
         "AI safety company founded by ex-OpenAI team, creators of Claude.",
-        "Backed by Google and Amazon.",
+        "Backed by Google ($3B+) and Amazon ($8B).",
         "Current valuation: $170B (Sep 2025)."
     ],
     "Databricks": [
@@ -180,6 +180,15 @@ for i, company in enumerate(["OpenAI", "SpaceX", "ByteDance", "Anthropic", "Data
             st.metric("Valuation", f"${latest['valuation ($B)']}B")
             st.metric("Total Raised", f"${latest['cumulative_raised ($B)']:.2f}B")
             st.metric("Latest Round", latest["funding_round"])
+
+            # ---------------------------
+            # Consensus & Personal Take
+            # ---------------------------
+            st.markdown("### 🧠 Consensus’s Take")
+            st.text_area(f"Consensus view on {company}", placeholder="What’s the general market view on this company?", key=f"{company}_consensus")
+
+            st.markdown("### 💭 My Take")
+            st.text_area(f"My view on {company}", placeholder="What’s my personal assessment or angle?", key=f"{company}_mytake")
 
 st.markdown("---")
 st.caption("Data aggregated from public/private market estimates, press releases, and secondary transactions.")
