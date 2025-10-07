@@ -197,13 +197,21 @@ for i, company in enumerate(["OpenAI", "SpaceX", "ByteDance", "Anthropic", "Data
                 st.metric("Valuation-to-Capital Multiple", f"{metrics['Valuation Efficiency']:.1f}×")
                 st.metric("Valuation CAGR", f"{metrics['CAGR']:.1f}% / yr")
 
-                st.markdown("### 📈 Expectation vs. Reality")
-                delta_color = "green" if metrics["Performance Delta"] > 0 else "red"
-                st.metric(
-                    "Valuation vs. Expected (40% CAGR baseline)",
-                    f"{metrics['Performance Delta']:+.1f}%",
-                    delta_color=delta_color
-                )
+                if metrics["Performance Delta"] > 0:
+    st.metric(
+        "Valuation vs. Expected (40% CAGR baseline)",
+        f"{metrics['Performance Delta']:+.1f}%",
+        delta="Above expected",
+        delta_color="normal"
+    )
+else:
+    st.metric(
+        "Valuation vs. Expected (40% CAGR baseline)",
+        f"{metrics['Performance Delta']:+.1f}%",
+        delta="Below expected",
+        delta_color="inverse"
+    )
+
 
             st.markdown("### 🧠 Consensus’s Take")
             st.text_area(f"Consensus view on {company}", key=f"{company}_consensus")
