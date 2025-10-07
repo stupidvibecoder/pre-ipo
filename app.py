@@ -100,7 +100,7 @@ company_info = {
     ],
     "Anthropic": [
         "AI safety company founded by ex-OpenAI team, creators of Claude.",
-        "Backed by Google ($3B+) and Amazon ($8B).",
+        "Backed by Google ($3B) and Amazon ($8B).",
         "Current valuation: $170B (Sep 2025)."
     ],
     "Databricks": [
