@@ -1,214 +1,194 @@
 import streamlit as st
 import pandas as pd
-import plotly.graph_objs as go
-from datetime import datetime, date
+import plotly.graph_objects as go
+from datetime import datetime
 
-# -----------------------------
-# Page config
-# -----------------------------
-st.set_page_config(
-    page_title="Private Market Tracker",
-    layout="wide",
-    page_icon="📊"
-)
+# ---------------------------
+# Page setup
+# ---------------------------
+st.set_page_config(page_title="Private Market Tracker", layout="wide")
 
-st.title("📊 Private Market Tracker")
-st.markdown("Visualizing valuation and funding data for the 5 biggest private companies.")
+st.title("📈 Private Market Tracker")
+st.write("Visualizing valuation and funding data for leading private companies in AI and technology.")
 
-# -----------------------------
-# Company Data
-# -----------------------------
+# ---------------------------
+# Data setup
+# ---------------------------
 data = [
     # SpaceX
-    ["SpaceX", "2015-01-01", 12, 1],
-    ["SpaceX", "2017-12-01", 21, 1.2],
-    ["SpaceX", "2020-08-01", 46, 2.1],
-    ["SpaceX", "2023-12-01", 150, 2.5],
-
-    # Stripe
-    ["Stripe", "2016-01-01", 5, 0.5],
-    ["Stripe", "2018-09-01", 20, 0.8],
-    ["Stripe", "2021-03-01", 95, 2],
-    ["Stripe", "2023-12-01", 65, 0.3],
-
-    # OpenAI
-    ["OpenAI", "2018-01-01", 1, 1],
-    ["OpenAI", "2021-01-01", 14, 1],
-    ["OpenAI", "2023-12-01", 80, 10],
+    ["SpaceX", "2002-12-18", 0.005, 0.001, "Seed"],
+    ["SpaceX", "2005-03-09", 0.05, 0.05, "Series B"],
+    ["SpaceX", "2008-08-01", 0.5, 0.02, "Series D"],
+    ["SpaceX", "2010-10-28", 1.0, 0.05, "Series E"],
+    ["SpaceX", "2015-01-20", 12.0, 1.0, "Series F"],
+    ["SpaceX", "2017-11-27", 21.0, 0.45, "Series H"],
+    ["SpaceX", "2018-04-01", 24.0, 0.21, "Series I"],
+    ["SpaceX", "2019-05-24", 33.3, 0.536, "Series J"],
+    ["SpaceX", "2020-08-18", 46.0, 1.9, "Series J"],
+    ["SpaceX", "2021-02-16", 74.0, 0.85, "Series J"],
+    ["SpaceX", "2022-12-01", 137.0, 0.75, "Series J"],
+    ["SpaceX", "2023-12-01", 180.0, 0.75, "Secondary"],
+    ["SpaceX", "2024-12-01", 255.0, 1.25, "Secondary"],
+    ["SpaceX", "2025-12-01", 350.0, 0, "Secondary"],
 
     # ByteDance
-    ["ByteDance", "2014-01-01", 5, 0.3],
-    ["ByteDance", "2017-04-01", 20, 2],
-    ["ByteDance", "2018-10-01", 75, 3],
-    ["ByteDance", "2021-03-01", 140, 5],
-    ["ByteDance", "2024-06-01", 275, 8],
+    ["ByteDance", "2012-07-01", 0.022, 0.005, "Series A"],
+    ["ByteDance", "2014-06-01", 0.5, 0.1, "Series C"],
+    ["ByteDance", "2016-12-01", 11.0, 0.4, "Series D"],
+    ["ByteDance", "2018-10-01", 75.0, 3.0, "Series E"],
+    ["ByteDance", "2020-12-01", 180.0, 1.9, "Series F"],
+    ["ByteDance", "2021-03-01", 250.0, 2.25, "Secondary"],
+    ["ByteDance", "2024-12-01", 268.0, 0, "Secondary"],
+    ["ByteDance", "2025-11-17", 300.0, 0, "Secondary"],
 
-    # Shein
-    ["Shein", "2018-01-01", 2, 0.3],
-    ["Shein", "2020-08-01", 15, 0.5],
-    ["Shein", "2022-04-01", 100, 1],
-    ["Shein", "2024-06-01", 66, 1],
+    # OpenAI
+    ["OpenAI", "2015-12-01", 0.001, 0.001, "Nonprofit Seed"],
+    ["OpenAI", "2019-07-22", 1.0, 1.0, "Microsoft Investment"],
+    ["OpenAI", "2023-01-23", 29.0, 10.0, "Microsoft Investment"],
+    ["OpenAI", "2024-10-02", 157.0, 6.6, "Series E"],
+    ["OpenAI", "2025-03-31", 300.0, 40.0, "Series F"],
+    ["OpenAI", "2025-10-01", 500.0, 6.6, "Secondary"],
+
+    # Databricks
+    ["Databricks", "2013-09-01", 0.014, 0.014, "Series A"],
+    ["Databricks", "2017-08-01", 0.7, 0.06, "Series C"],
+    ["Databricks", "2019-10-22", 6.2, 0.4, "Series F"],
+    ["Databricks", "2021-08-31", 38.0, 1.6, "Series H"],
+    ["Databricks", "2023-09-14", 43.0, 0.5, "Series I"],
+    ["Databricks", "2024-11-28", 62.0, 10.0, "Series J"],
+    ["Databricks", "2025-09-08", 100.0, 1.0, "Series K"],
+
+    # Anthropic
+    ["Anthropic", "2021-05-01", 0.124, 0.124, "Series A"],
+    ["Anthropic", "2023-09-01", 18.4, 3.0, "Series C"],
+    ["Anthropic", "2024-02-01", 18.4, 2.0, "Series C"],
+    ["Anthropic", "2025-03-01", 62.0, 3.5, "Series E"],
+    ["Anthropic", "2025-09-01", 170.0, 5.0, "Series F"],
 ]
 
-df = pd.DataFrame(data, columns=["Company", "Date", "Valuation ($B)", "Capital Raised ($B)"])
-df["Date"] = pd.to_datetime(df["Date"])
-df["Capital Raised ($B)"] = pd.to_numeric(df["Capital Raised ($B)"], errors="coerce")
+df = pd.DataFrame(data, columns=["company", "date", "valuation ($B)", "capital_raised ($B)", "funding_round"])
+df["date"] = pd.to_datetime(df["date"])
+df["valuation ($B)"] = pd.to_numeric(df["valuation ($B)"], errors="coerce")
+df["capital_raised ($B)"] = pd.to_numeric(df["capital_raised ($B)"], errors="coerce")
+df["cumulative_raised ($B)"] = df.groupby("company")["capital_raised ($B)"].cumsum()
 
-# -----------------------------
-# Descriptions
-# -----------------------------
-descriptions = {
-    "SpaceX": [
-        "Develops and launches rockets and satellites.",
-        "Leader in commercial space and Starlink internet.",
-        "Valuation surge tied to Starlink and Mars ambitions.",
-        "IPO timeline uncertain but highly anticipated."
-    ],
-    "Stripe": [
-        "Fintech infrastructure for online payments.",
-        "Backbone for thousands of digital-first companies.",
-        "Valuation peaked in 2021; down amid fintech slowdown.",
-        "IPO expected after profitability stabilizes."
-    ],
+# Founding dates
+founding_dates = {
+    "SpaceX": "2002-03-14",
+    "ByteDance": "2012-03-01",
+    "OpenAI": "2015-12-11",
+    "Databricks": "2013-01-01",
+    "Anthropic": "2021-01-01"
+}
+
+# Company info
+company_info = {
     "OpenAI": [
-        "AI research and product company behind ChatGPT.",
-        "Massive valuation increase post-GPT-4 launch.",
-        "Microsoft partnership adds distribution moat.",
-        "Revenue growth driven by API and enterprise deals."
+        "AI research and deployment company behind GPT models and ChatGPT.",
+        "Raised record $40B in March 2025 — largest private tech round ever.",
+        "Current valuation: $500B (Oct 2025)."
+    ],
+    "SpaceX": [
+        "Founded by Elon Musk in 2002, focused on space transport and satellite internet.",
+        "Operates Starlink, Falcon, and Starship programs.",
+        "Current valuation: $350B (Dec 2025)."
     ],
     "ByteDance": [
         "Parent company of TikTok and Douyin.",
-        "Global leader in short-form video content.",
-        "Diversifying into productivity, AI, and gaming.",
-        "IPO delayed amid Chinese regulatory pressures."
+        "Dominates global short-form video and digital advertising.",
+        "Current valuation: $300B (Nov 2025)."
     ],
-    "Shein": [
-        "Global fast-fashion e-commerce giant.",
-        "Known for rapid trend cycles and low-cost supply chain.",
-        "Exploring IPO in London or New York.",
-        "Facing ESG and labor scrutiny but massive user growth."
+    "Anthropic": [
+        "AI safety company founded by ex-OpenAI team, creators of Claude.",
+        "Backed by Google ($3B+) and Amazon ($8B).",
+        "Current valuation: $170B (Sep 2025)."
+    ],
+    "Databricks": [
+        "Data and AI platform built on Apache Spark architecture.",
+        "Raised $10B Series J in Nov 2024.",
+        "Current valuation: $100B (Sep 2025)."
     ]
 }
 
-# Founding years for x-axis start
-founding_years = {
-    "SpaceX": 2002,
-    "Stripe": 2010,
-    "OpenAI": 2015,
-    "ByteDance": 2012,
-    "Shein": 2008
-}
+# ---------------------------
+# Helper: plot generator
+# ---------------------------
+def plot_company(company):
+    company_df = df[df["company"] == company].sort_values("date")
+    company_df["valuation ($B)"] = pd.to_numeric(company_df["valuation ($B)"], errors="coerce")
+    company_df["cumulative_raised ($B)"] = pd.to_numeric(company_df["cumulative_raised ($B)"], errors="coerce")
 
-# -----------------------------
-# Sidebar selection
-# -----------------------------
-company = st.sidebar.selectbox("Select a company:", df["Company"].unique())
+    max_raise = float(company_df["cumulative_raised ($B)"].fillna(0).max() or 1)
+    max_val = float(company_df["valuation ($B)"].fillna(0).max() or 1)
 
-company_df = df[df["Company"] == company].sort_values("Date").copy()
-company_df["cumulative_raised ($B)"] = company_df["Capital Raised ($B)"].cumsum()
+    founding_date = pd.to_datetime(founding_dates[company])
+    today = pd.to_datetime(datetime.today().date())
 
-# -----------------------------
-# Layout
-# -----------------------------
-col1, col2 = st.columns([2, 1])
-
-# -----------------------------
-# Plotly Chart
-# -----------------------------
-with col1:
     fig = go.Figure()
-
     fig.add_trace(go.Scatter(
-        x=company_df["Date"],
-        y=company_df["Valuation ($B)"],
+        x=company_df["date"],
+        y=company_df["valuation ($B)"],
+        mode="lines+markers",
         name="Valuation ($B)",
-        mode="lines+markers",
-        line=dict(color="deepskyblue", width=3)
+        line=dict(color="royalblue", width=3),
+        marker=dict(size=8),
+        hovertemplate="<b>%{text}</b><br>Date: %{x}<br>Valuation: $%{y}B<extra></extra>",
+        text=company_df["funding_round"]
     ))
-
     fig.add_trace(go.Scatter(
-        x=company_df["Date"],
+        x=company_df["date"],
         y=company_df["cumulative_raised ($B)"],
-        name="Cumulative Capital Raised ($B)",
         mode="lines+markers",
+        name="Cumulative Raised ($B)",
+        yaxis="y2",
         line=dict(color="orange", width=3, dash="dot"),
-        yaxis="y2"
+        marker=dict(size=8),
+        hovertemplate="<b>%{text}</b><br>Date: %{x}<br>Total Raised: $%{y}B<extra></extra>",
+        text=company_df["funding_round"]
     ))
-
-    # X-axis range from founding date to today
-    start_date = datetime(founding_years[company], 1, 1)
-    end_date = datetime.today()
-
     fig.update_layout(
-        title=f"{company}: Valuation vs. Cumulative Capital Raised",
-        xaxis=dict(title="Date", range=[start_date, end_date]),
-        yaxis=dict(title="Valuation ($B)"),
-        yaxis2=dict(
-            title="Cumulative Capital Raised ($B)",
-            overlaying="y",
-            side="right",
-            showgrid=False
-        ),
+        title=f"{company} — Valuation and Capital Raised Over Time",
+        xaxis=dict(title="Date", range=[founding_date, today]),
+        yaxis=dict(title="Valuation ($B)", range=[0, max_val * 1.2]),
+        yaxis2=dict(title="Cumulative Raised ($B)", overlaying="y", side="right", range=[0, max_raise * 1.2]),
+        legend=dict(x=0, y=1.1, orientation="h"),
+        height=600,
         template="plotly_dark",
-        legend=dict(x=0.01, y=0.99)
+        hovermode="x unified"
     )
+    return fig, company_df
 
-    st.plotly_chart(fig, use_container_width=True)
+# ---------------------------
+# Tabs for each company
+# ---------------------------
+tabs = st.tabs(["OpenAI", "SpaceX", "ByteDance", "Anthropic", "Databricks"])
 
-# -----------------------------
-# Company Info
-# -----------------------------
-with col2:
-    st.markdown(f"### About {company}")
-    for bullet in descriptions[company]:
-        st.markdown(f"- {bullet}")
+for i, company in enumerate(["OpenAI", "SpaceX", "ByteDance", "Anthropic", "Databricks"]):
+    with tabs[i]:
+        fig, company_df = plot_company(company)
+        col1, col2 = st.columns([3, 1])
 
-# -----------------------------
-# Expectation vs. Reality Section
-# -----------------------------
+        with col1:
+            st.plotly_chart(fig, use_container_width=True)
+
+        with col2:
+            st.markdown(f"### About {company}")
+            for point in company_info[company]:
+                st.markdown(f"- {point}")
+
+            latest = company_df.iloc[-1]
+            st.metric("Valuation", f"${latest['valuation ($B)']}B")
+            st.metric("Total Raised", f"${latest['cumulative_raised ($B)']:.2f}B")
+            st.metric("Latest Round", latest["funding_round"])
+
+            # ---------------------------
+            # Consensus & Personal Take
+            # ---------------------------
+            st.markdown("### 🧠 Consensus’s Take")
+            st.text_area(f"Consensus view on {company}", placeholder="What’s the general market view on this company?", key=f"{company}_consensus")
+
+            st.markdown("### 💭 My Take")
+            st.text_area(f"My view on {company}", placeholder="What’s my personal assessment or angle?", key=f"{company}_mytake")
+
 st.markdown("---")
-st.header("📈 Expectation vs. Reality")
-
-# Compute expected valuation given CAGR baseline
-latest_row = company_df.iloc[-1]
-first_row = company_df.iloc[0]
-years = (latest_row["Date"] - first_row["Date"]).days / 365
-
-expected_cagr = 0.40  # 40% baseline
-expected_val = first_row["Valuation ($B)"] * ((1 + expected_cagr) ** years)
-actual_val = latest_row["Valuation ($B)"]
-
-performance_delta = (actual_val - expected_val) / expected_val * 100
-delta_label = "Above expected" if performance_delta > 0 else "Below expected"
-delta_color = "normal" if performance_delta > 0 else "inverse"
-
-st.metric(
-    "Valuation vs. Expected (40% CAGR baseline)",
-    f"{performance_delta:+.1f}%",
-    delta=delta_label,
-    delta_color=delta_color
-)
-
-# -----------------------------
-# Consensus + My Take sections
-# -----------------------------
-st.markdown("---")
-st.subheader("🧭 Consensus View")
-st.markdown(
-    """
-    _How the market generally views this company:_
-    - Key valuation drivers
-    - Growth narrative and investor sentiment
-    - Implied expectations behind valuation multiples
-    """
-)
-
-st.subheader("💡 My Take")
-st.markdown(
-    """
-    _Your personal insight, variant perception, or counter-view:_
-    - What the market might be missing
-    - Leading indicators or red flags
-    - What could change your thesis
-    """
-)
+st.caption("Data aggregated from public/private market estimates, press releases, and secondary transactions.")
