@@ -83,10 +83,11 @@ founding_dates = {
 
 # Company info
 company_info = {
-    "OpenAI": [
-        "AI research and deployment company behind GPT models and ChatGPT.",
-        "Raised record $40B in March 2025 — largest private tech round ever.",
-        "Current valuation: $500B (Oct 2025)."
+    "OpenAI (Source: Pitchbook)" : [
+        "General Information: OpenAI, founded in 2015 and based in San Francisco, develops machine learning systems for general-purpose artificial intelligence applications. The company has 4,500 employees and offers a platform that includes large-scale language models, multimodal input handling, and tools for automation and content generation."
+        "Deal History & Financials: OpenAI completed a secondary transaction on October 3, 2025, where investors sold their stake for $6.6B, resulting in a post-money valuation of $500B and bringing the total amount raised to $34.72B. Prior to this, OpenAI raised $40B in a later stage VC round on March 31, 2025, with a post-money valuation of $300B."
+        "Investors & Team: OpenAI was co-founded by Samuel Altman, who serves as the CEO, along with Greg Brockman (President), Brad Lightcap (COO), and Sarah Friar (CFO). Key active investors include Microsoft (NAS: MSFT), Tiger Global Management, and Sequoia Capital. Former investor includes Al Moammar Information."
+        "Investment Activity: OpenAI has made several investments in AI-related companies such as Figure AI and CoreWeave, and has acquired firms like Roi and Statsig to enhance its capabilities in financial management and digital product testing."
     ],
     "SpaceX": [
         "Founded by Elon Musk in 2002, focused on space transport and satellite internet.",
